@@ -3,6 +3,7 @@ from login import login
 from signup import signup
 from DB import connection_to_db
 import pandas as pd
+from function import fetch_all_products
 
 conn = connection_to_db() 
 cursor = conn.cursor()
@@ -38,6 +39,8 @@ else:
     st.info("You can now manage products.")
 
     selected_task= st.selectbox("Choose a Task",["Add a New Product","Edit Product Information","View Product Information","Delete a Product"])
+
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------
     if selected_task=="Add a New Product":
         st.header("Add a Product")
         p_name = st.text_input("Product Name")
@@ -56,38 +59,30 @@ else:
 
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    if selected_task== "Edit Product Information":
+    if selected_task == "Edit Product Information":
         st.subheader("Edit Product Information")
-        product_name = st.text_input("Enter Product Name to Edit")
-        
-        if st.button("Check Product"):
-        # Check if product exists
-            cursor.execute(
-            "SELECT p_id FROM products WHERE p_name=%s",
-            (product_name,)
-        )
-        product = cursor.fetchone()
-        if product:
-            st.success(f"Product '{product_name}' found ✅")
+        products = fetch_all_products()
 
-            # Step 2: Show input fields only if product exists
+        if products:
+            product_dict = {name: pid for pid, name in products}
+            selected_name = st.selectbox("Select Product to Edit", list(product_dict.keys()))
+            selected_id = product_dict[selected_name]
+
             new_quantity = st.number_input("Enter New Quantity", min_value=0)
             new_category = st.text_input("Enter New Category")
 
-            if st.button("Update Product"):
+            if st.button("Update Product", key="edit_btn"):
                 cursor.execute(
-                    "UPDATE products SET p_quantity=%s, p_category=%s WHERE p_name=%s",
-                    (new_quantity, new_category, product_name)
-                )
+                "UPDATE products SET p_quantity=%s, p_category=%s WHERE p_id=%s",
+                (new_quantity, new_category, selected_id)
+            )
                 conn.commit()
-                st.success(f"Product '{product_name}' updated successfully")
-
+                st.success(f"Product '{selected_name}' updated successfully ✅")
         else:
-            st.warning("No such product found")
+            st.warning("No products available to edit.")
 
-
-
-
+    
+        
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
