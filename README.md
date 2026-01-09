@@ -18,17 +18,17 @@ This project uses **MySQL** as the database and **hashed passwords** for securit
 
 ## Project Structure
 
-product-management-system/
-│
-├─ app.py # Main Streamlit application
-├─ login.py # Login functionality
-├─ signup.py # Signup functionality
-├─ DB.py # Database connection
-├─ function.py # Utility functions (fetch products, metrics, validation)
-├─ requirements.txt # Python dependencies
-├─ mysql_code.sql # MySQL database and table setup
-├─ .env.example # Environment variables example
-└─ README.md # Project instructions
+product-management-system/ :
+
+app.py # Main Streamlit application
+login.py # Login functionality
+signup.py # Signup functionality
+DB.py # Database connection
+function.py # Utility functions (fetch products, metrics, validation)
+requirements.txt # Python dependencies
+mysql_code.sql # MySQL database and table setup
+.env.example # Environment variables example
+README.md # Project instructions
 
 
 ## Prerequisites
