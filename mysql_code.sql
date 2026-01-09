@@ -7,8 +7,8 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL
 );
 CREATE TABLE products(
-p_id int auto_increment primary key,
-p_name varchar(100) not null,
-p_quantity int  not null,
-p_price float,
-p_category varchar(100) not null);
+p_id INT auto_increment PRIMARY KEY,
+p_name VARCHAR(100) NOT NULL,
+p_quantity INT NOT NULL,
+p_price FLOAT,
+p_category VARCHAR(100) NOT NULL);
