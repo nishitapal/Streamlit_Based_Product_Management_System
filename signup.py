@@ -1,13 +1,15 @@
 import streamlit as st
 from DB import connection_to_db
 from function import is_valid_email,clean
+from werkzeug.security import generate_password_hash
+
 
 def signup():
     st.header("Create Account")
     username=clean(st.text_input("Username").strip())
     email=st.text_input("Email").strip()
-    password=clean(st.text_input("Password",type="password").strip())
-    confirm_password=clean(st.text_input("confirm_password",type="password").strip())
+    password=st.text_input("Password",type="password").strip()
+    confirm_password=st.text_input("confirm_password",type="password").strip()
 
     if st.button("Signup"):
         if not username or not email or not password:
@@ -29,12 +31,14 @@ def signup():
             conn=connection_to_db()
             cursor=conn.cursor()
 
+            hashed_password = generate_password_hash(password)
+
             cursor.execute( "select user_id from users where username=%s",(username,))
             if cursor.fetchone():
                 st.error("username already exist")
                 conn.close()
                 return
-            cursor.execute("insert into users (username,email,password) values (%s,%s,%s)",(username,email,password))
+            cursor.execute("insert into users (username,email,password) values (%s,%s,%s)",(username,email,hashed_password))
             conn.commit()
             st.success("signup successful , Please Login")
             conn.close()
