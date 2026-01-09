@@ -3,7 +3,7 @@ from login import login
 from signup import signup
 from DB import connection_to_db
 import pandas as pd
-from function import fetch_all_products
+from function import fetch_all_products,get_total_products,get_total_categories
 
 conn = connection_to_db() 
 cursor = conn.cursor()
@@ -16,7 +16,8 @@ if "logged_in" not in st.session_state:
 if "username" not in st.session_state:
     st.session_state.username = None
 
-st.title("Secure Product Catalog System")
+st.title("Product Management System")
+
 if not st.session_state.logged_in:
     tab1, tab2 = st.tabs(["Login", "Sign Up"])
 
@@ -27,7 +28,9 @@ if not st.session_state.logged_in:
         signup()
 
 else:
-    st.sidebar.success(f"Logged in as {st.session_state.username}")
+    st.sidebar.success(f"Welcome {st.session_state.username}")
+
+
 
     if st.sidebar.button("Logout"):
         st.session_state.logged_in = False
@@ -35,10 +38,31 @@ else:
         st.rerun()
         
 
-    st.header(f"Welcome, {st.session_state.username}")
-    st.info("You can now manage products.")
+   
+   
+    st.subheader("Basic Metrics")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("Total Products", get_total_products())
+
+    with col2:
+        st.metric("Total Categories", get_total_categories())
+
+    st.success("Summary data reflects the latest records.")
+    
+
+
+
+
+    # st.info("You can now manage products.")
 
     selected_task= st.selectbox("Choose a Task",["Add a New Product","Edit Product Information","View Product Information","Delete a Product"])
+
+
+
+
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
     if selected_task=="Add a New Product":
@@ -109,6 +133,29 @@ else:
 
 # -----------------------------------------------------------------------------------------------------------------------------
     elif selected_task== "Delete a Product":
-        pass
+        st.subheader("Delete Product")
+
+        products = fetch_all_products() 
+        if products:
+            product_dict = {name: pid for pid, name in products}
+            selected_name = st.selectbox("Select Product to Delete", list(product_dict.keys()))
+            selected_id = product_dict[selected_name]
+
+
+            if st.button("Delete Product", key="delete_btn"):
+                cursor.execute(
+                "DELETE FROM products WHERE p_id=%s",
+                (selected_id,)
+            )
+                conn.commit()
+
+                if cursor.rowcount > 0:
+                    st.success(f"Product '{selected_name}' deleted successfully")
+                else:
+                    st.warning("Product could not be deleted")
+        else:
+            st.warning("No products available to delete.")
+
+        
 
 

@@ -18,3 +18,22 @@ def fetch_all_products():
     cursor.close()
     conn.close()
     return products
+
+
+def get_total_products():
+    conn = connection_to_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM Products")
+    total = cursor.fetchone()[0]
+    conn.close()
+    return total
+
+
+
+def get_total_categories():
+    conn = connection_to_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(DISTINCT p_category) FROM products")
+    total = cursor.fetchone()[0]
+    conn.close()
+    return total
