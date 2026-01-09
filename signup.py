@@ -1,13 +1,13 @@
 import streamlit as st
 from DB import connection_to_db
-from function import is_valid_email
+from function import is_valid_email,clean
 
 def signup():
     st.header("Create Account")
-    username=st.text_input("Username")
-    email=st.text_input("Email")
-    password=st.text_input("Password",type="password")
-    confirm_password=st.text_input("confirm_password",type="password")
+    username=clean(st.text_input("Username").strip())
+    email=st.text_input("Email").strip()
+    password=clean(st.text_input("Password",type="password").strip())
+    confirm_password=clean(st.text_input("confirm_password",type="password").strip())
 
     if st.button("Signup"):
         if not username or not email or not password:

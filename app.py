@@ -2,7 +2,7 @@ import streamlit as st
 from login import login
 from signup import signup
 
-st.set_page_config(page_title="Secure Product Catalog",layout="centered")
+st.set_page_config(page_title="Product Management System",layout="centered")
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -26,8 +26,20 @@ else:
     if st.sidebar.button("Logout"):
         st.session_state.logged_in = False
         st.session_state.username = None
-        st.experimental_rerun()
+        st.rerun()
+        
 
-    st.header("Dashboard")
+    st.header(f"Welcome, {st.session_state.username}")
     st.info("You can now manage products.")
+
+    selected_task= st.selectbox("Choose a Task",["Add a New Product","Edit Product Information","View Product Information","Delete a Product"])
+    if selected_task=="Add New Product":
+        pass
+    if selected_task== "Edit Product Information":
+        pass
+    if selected_task== "view Product Information":
+        pass
+    elif selected_task== "Delete a Product":
+        pass
+
 

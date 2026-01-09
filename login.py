@@ -1,10 +1,11 @@
 import streamlit as st
 from DB import connection_to_db
+from function import clean
 
 def login():
     st.header("Login")
-    username=st.text_input("username")
-    password=st.text_input("password",type="password")
+    username=clean(st.text_input("username").strip())
+    password=clean(st.text_input("password",type="password").strip())
 
     if st.button("Login"):
         conn=connection_to_db()
@@ -17,5 +18,6 @@ def login():
             st.session_state.logged_in = True
             st.session_state.username = username
             st.success("Login successful")
+            st.rerun()
         else:
             st.error("Invalid Username or Password")
