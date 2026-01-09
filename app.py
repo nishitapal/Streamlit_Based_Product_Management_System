@@ -1,6 +1,11 @@
 import streamlit as st
 from login import login
 from signup import signup
+from DB import connection_to_db
+import pandas as pd
+
+conn = connection_to_db() 
+cursor = conn.cursor()
 
 st.set_page_config(page_title="Product Management System",layout="centered")
 
@@ -33,12 +38,81 @@ else:
     st.info("You can now manage products.")
 
     selected_task= st.selectbox("Choose a Task",["Add a New Product","Edit Product Information","View Product Information","Delete a Product"])
-    if selected_task=="Add New Product":
-        pass
+    if selected_task=="Add a New Product":
+        st.header("Add a Product")
+        p_name = st.text_input("Product Name")
+        p_quantity = st.number_input("Quantity", min_value=0)
+        p_price = st.number_input("Price", min_value=0.0)
+        p_category = st.text_input("Category")
+
+        if st.button("Add Product"):
+            cursor.execute(
+            "INSERT INTO products (p_name, p_quantity, p_price, p_category) VALUES (%s, %s, %s, %s)",
+            (p_name, p_quantity, p_price, p_category)
+        )
+            conn.commit()
+            st.success(f"Product '{p_name}' added successfully ")
+
+
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     if selected_task== "Edit Product Information":
-        pass
-    if selected_task== "view Product Information":
-        pass
+        st.subheader("Edit Product Information")
+        product_name = st.text_input("Enter Product Name to Edit")
+        
+        if st.button("Check Product"):
+        # Check if product exists
+            cursor.execute(
+            "SELECT p_id FROM products WHERE p_name=%s",
+            (product_name,)
+        )
+        product = cursor.fetchone()
+        if product:
+            st.success(f"Product '{product_name}' found ✅")
+
+            # Step 2: Show input fields only if product exists
+            new_quantity = st.number_input("Enter New Quantity", min_value=0)
+            new_category = st.text_input("Enter New Category")
+
+            if st.button("Update Product"):
+                cursor.execute(
+                    "UPDATE products SET p_quantity=%s, p_category=%s WHERE p_name=%s",
+                    (new_quantity, new_category, product_name)
+                )
+                conn.commit()
+                st.success(f"Product '{product_name}' updated successfully")
+
+        else:
+            st.warning("No such product found")
+
+
+
+
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------------------------
+    if selected_task== "View Product Information":
+        st.subheader("View Product Information")
+        search_name = st.text_input("Enter Product Name")
+        if st.button("Search"):
+            cursor.execute(
+            "SELECT p_name, p_quantity, p_price, p_category FROM products WHERE p_name=%s",
+            (search_name,)
+        )
+            product = cursor.fetchall()
+            if product:
+            # Convert to DataFrame for table view
+                df = pd.DataFrame(product, columns=["Name", "Quantity", "Price", "Category"])
+                st.table(df)
+            else:
+                st.warning("No product found with that name.")
+
+
+
+
+
+
+# -----------------------------------------------------------------------------------------------------------------------------
     elif selected_task== "Delete a Product":
         pass
 
